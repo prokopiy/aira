@@ -2,28 +2,33 @@
 (defmodule tplogic
     (export all))
 
-(defrecord tpline
-    (period 0)
-    (points '()))
+
+(defun new-tpline []
+  (list 'tpline 0 '()))
+
+(defun new-tpline 
+  ((p l) (when (and (is_list l) (is_integer p))) (list 'tpline (abs p) l)))
 
 
-(defun new ()
-  (make-tpline))
+(defun tpline-points
+  ([(cons 'tpline (cons _ points))] (when) points))
 
-(defun new 
-  ((p l) (when (and (is_list l) (is_integer p))) (make-tpline period (abs p) points l)))
+(defun tpline-period
+  ([(cons 'tpline (cons period _))] (when) period))
+
 
 (defun print (v)
   (lfe_io:format "~w\n" (list v)))
 
-(defun earlier (v1 v2) 
-  (< (car v1) (car v2)))
+(defun earlier (p1 p2) 
+  (< (car p1) (car p2)))
 
-(defun later (v1 v2) 
-  (> (car v1) (car v2)))
+(defun later (p1 p2) 
+  (> (car p1) (car p2)))
+
 
 (defun sort (v)
-  (new (tpline-period v) (lists:sort #'earlier/2 (tpline-points v))))
+  (new-tpline (tpline-period v) (lists:sort #'earlier/2 (tpline-points v))))
 
 
 
@@ -46,6 +51,7 @@
                   ((and (< t last_def_time) (> t (caar (tpline-points v))))
                     (get-nearest-point-from-list '(0 0) t (tpline-points v)))
                   ('true '(0 0)))))))
+
 
 (defun get-point (t v)
   (let (((cons nt nv) (get-nearest-point t v)))
