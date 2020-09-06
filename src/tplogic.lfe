@@ -1,14 +1,14 @@
-; time-probablity-line
+;;; time-probablity-line
+
+
 (defmodule tplogic
     (export all))
-
 
 (defun new-tpline []
   (list 'tpline 0 '()))
 
 (defun new-tpline 
   ((p l) (when (and (is_list l) (is_integer p))) (list 'tpline (abs p) l)))
-
 
 (defun tpline-points
   ([(cons 'tpline (cons _ points))] (when) points))

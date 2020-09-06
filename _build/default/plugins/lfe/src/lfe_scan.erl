@@ -12,7 +12,7 @@
 -export([format_error/1]).
 
 %% User code. This is placed here to allow extra attributes.
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 106).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 106).
 %% Copyright (c) 2008-2013 Robert Virding
 %%
 %% Licensed under the Apache License, Version 2.0 (the "License");
@@ -455,7 +455,7 @@ adjust_line(T, A, [_|Cs], L) ->
 %% return signal either an unrecognised character or end of current
 %% input.
 
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.erl", 457).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.erl", 457).
 yystate() -> 63.
 
 yystate(66, [126|Ics], Line, Tlen, _, _) ->
@@ -1676,143 +1676,143 @@ yyaction(29, _, _, _) ->
 yyaction(_, _, _, _) -> error.
 
 -compile({inline,yyaction_0/1}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 34).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 34).
 yyaction_0(TokenChars) ->
      block_comment (string : substr (TokenChars, 3)) .
 
 -compile({inline,yyaction_1/1}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 37).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 37).
 yyaction_1(TokenLine) ->
      { token, { '\'', TokenLine } } .
 
 -compile({inline,yyaction_2/1}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 38).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 38).
 yyaction_2(TokenLine) ->
      { token, { '`', TokenLine } } .
 
 -compile({inline,yyaction_3/1}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 39).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 39).
 yyaction_3(TokenLine) ->
      { token, { ',', TokenLine } } .
 
 -compile({inline,yyaction_4/1}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 40).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 40).
 yyaction_4(TokenLine) ->
      { token, { ',@', TokenLine } } .
 
 -compile({inline,yyaction_5/1}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 41).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 41).
 yyaction_5(TokenLine) ->
      { token, { '.', TokenLine } } .
 
 -compile({inline,yyaction_6/2}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 42).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 42).
 yyaction_6(TokenChars, TokenLine) ->
      { token, { list_to_atom (TokenChars), TokenLine } } .
 
 -compile({inline,yyaction_7/1}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 44).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 44).
 yyaction_7(TokenLine) ->
      { token, { '#B(', TokenLine } } .
 
 -compile({inline,yyaction_8/1}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 45).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 45).
 yyaction_8(TokenLine) ->
      { token, { '#M(', TokenLine } } .
 
 -compile({inline,yyaction_9/1}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 46).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 46).
 yyaction_9(TokenLine) ->
      { token, { '#(', TokenLine } } .
 
 -compile({inline,yyaction_10/1}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 47).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 47).
 yyaction_10(TokenLine) ->
      { token, { '#.', TokenLine } } .
 
 -compile({inline,yyaction_11/1}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 49).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 49).
 yyaction_11(TokenLine) ->
      { token, { '#`', TokenLine } } .
 
 -compile({inline,yyaction_12/1}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 50).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 50).
 yyaction_12(TokenLine) ->
      { token, { '#;', TokenLine } } .
 
 -compile({inline,yyaction_13/1}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 51).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 51).
 yyaction_13(TokenLine) ->
      { token, { '#,', TokenLine } } .
 
 -compile({inline,yyaction_14/1}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 52).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 52).
 yyaction_14(TokenLine) ->
      { token, { '#,@', TokenLine } } .
 
 -compile({inline,yyaction_15/2}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 55).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 55).
 yyaction_15(TokenChars, TokenLine) ->
      char_token (skip_past (TokenChars, 92, 92), TokenLine) .
 
 -compile({inline,yyaction_16/2}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 58).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 58).
 yyaction_16(TokenChars, TokenLine) ->
      base_token (skip_past (TokenChars, 42, 42), 2, TokenLine) .
 
 -compile({inline,yyaction_17/2}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 59).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 59).
 yyaction_17(TokenChars, TokenLine) ->
      base_token (skip_past (TokenChars, 98, 66), 2, TokenLine) .
 
 -compile({inline,yyaction_18/2}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 60).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 60).
 yyaction_18(TokenChars, TokenLine) ->
      base_token (skip_past (TokenChars, 111, 79), 8, TokenLine) .
 
 -compile({inline,yyaction_19/2}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 61).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 61).
 yyaction_19(TokenChars, TokenLine) ->
      base_token (skip_past (TokenChars, 100, 68), 10, TokenLine) .
 
 -compile({inline,yyaction_20/2}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 62).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 62).
 yyaction_20(TokenChars, TokenLine) ->
      base_token (skip_past (TokenChars, 120, 88), 16, TokenLine) .
 
 -compile({inline,yyaction_21/2}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 65).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 65).
 yyaction_21(TokenChars, TokenLine) ->
      { Base, [_ | Ds ] } = base1 (tl (TokenChars), 10, 0),
      base_token (Ds, Base, TokenLine) .
 
 -compile({inline,yyaction_22/3}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 71).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 71).
 yyaction_22(TokenChars, TokenLen, TokenLine) ->
      S = string : substr (TokenChars, 2, TokenLen - 2),
      { token, { string, TokenLine, chars (S) } } .
 
 -compile({inline,yyaction_23/3}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 76).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 76).
 yyaction_23(TokenChars, TokenLen, TokenLine) ->
      S = string : substr (TokenChars, 3, TokenLen - 3),
      Bin = unicode : characters_to_binary (chars (S), utf8, utf8),
      { token, { binary, TokenLine, Bin } } .
 
 -compile({inline,yyaction_24/3}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 82).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 82).
 yyaction_24(TokenChars, TokenLen, TokenLine) ->
      S = string : substr (TokenChars, 2, TokenLen - 2),
      symbol_token (chars (S), TokenLine) .
 
 -compile({inline,yyaction_25/2}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 87).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 87).
 yyaction_25(TokenChars, TokenLine) ->
      FunStr = string : substr (TokenChars, 3),
      { token, { '#\'', TokenLine, FunStr } } .
 
 -compile({inline,yyaction_26/2}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 91).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 91).
 yyaction_26(TokenChars, TokenLine) ->
      case catch { ok, list_to_integer (TokenChars) } of
      { ok, I } -> { token, { number, TokenLine, I } } ;
@@ -1820,7 +1820,7 @@ yyaction_26(TokenChars, TokenLine) ->
      end .
 
 -compile({inline,yyaction_27/2}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 96).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 96).
 yyaction_27(TokenChars, TokenLine) ->
      case catch { ok, list_to_float (TokenChars) } of
      { ok, F } -> { token, { number, TokenLine, F } } ;
@@ -1828,12 +1828,12 @@ yyaction_27(TokenChars, TokenLine) ->
      end .
 
 -compile({inline,yyaction_28/2}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 101).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 101).
 yyaction_28(TokenChars, TokenLine) ->
      symbol_token (TokenChars, TokenLine) .
 
 -compile({inline,yyaction_29/0}).
--file("/home/prokopiy/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 102).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 102).
 yyaction_29() ->
      skip_token .
 

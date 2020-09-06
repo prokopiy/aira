@@ -1,0 +1,4 @@
+[submodule "docs"]
+	path = docs
+	url = git@github.com:lfe-rebar3/rebar3_lfe.git
+	branch = gh-pages
