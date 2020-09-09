@@ -2,10 +2,12 @@
     (export all))
 
 
-(defun load-from-csv [Data Filename]
+(defun load-from-csv [Data Filename Factor]
     (let* [((tuple _ parser) (csv:binary_reader Filename))
            (V (load-csv '() parser))]
-          (make-triplets-from-lists2 '() (kb:gen-n-uuid (- (length V) 1)) (car V) (cdr V))))
+          (add-tpl-to-triples-list '() 
+            (make-triplets-from-table '() (kb:gen-n-uuid (- (length V) 1)) (car V) (cdr V))
+            (tplogic:new-tpline 0 (list (list (erlang:system_time) Factor))))))
 
 (defun load-csv [data parser]
   (case (csv:next_line parser)
@@ -13,16 +15,21 @@
     ('eof (when) (lists:reverse data))))
 
 
-(defun make-triplets-from-lists
+(defun make-triplets-from-row
     ([Data _ '() '()] (when) Data)
     ([Data subject (cons p-head p-tail) (cons o-head o-tail)] (when) 
-        (cons (list p-head subject o-head) (make-triplets-from-lists Data subject p-tail o-tail))))
+        (cons (list p-head subject o-head) (make-triplets-from-row Data subject p-tail o-tail))))
 
-(defun make-triplets-from-lists2
+(defun make-triplets-from-table
     ([Data _ _ '()] (when) Data)
-    ([Data (cons s-head s-tail) predicates (cons l-head l-tail)] (when) 
-        (lists:append (make-triplets-from-lists '() s-head predicates l-head) 
-              (make-triplets-from-lists2 Data s-tail predicates l-tail))))
+    ([Data (cons subjects-head subjects-tail) predicates (cons l-head l-tail)] (when) 
+        (lists:append (make-triplets-from-row '() subjects-head predicates l-head) 
+              (make-triplets-from-table Data subjects-tail predicates l-tail))))
+
+(defun add-tpl-to-triples-list
+    ([Result '() _] (when) Result)
+    ([Result (cons H T) TPL] (when) (cons (list H TPL) (add-tpl-to-triples-list Result T TPL))))
+
 
 
 (defun gen-n-uuid [N]
@@ -33,5 +40,5 @@
     ([D N] (when) (cons (uuid:v4) (gen-n-uuid D (- N 1)))))
 
 
-(defun make-triplet [p s o]
-    (list p s o))
+; (defun make-triplet [p s o]
+;     (list p s o))
