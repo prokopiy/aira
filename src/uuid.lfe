@@ -28,7 +28,6 @@
     (let (((tuple 'ok (list D) '()) (io_lib:fread "~16u" Hex)))
         D))
 
-
 (defun to_binary
     ([UuidStr] (when (is_list UuidStr)) 
         (case (length UuidStr)
@@ -44,4 +43,3 @@
             (binary 
                 ((lists:nth 1 P) (size 32)) ((lists:nth 2 P) (size 16)) ((lists:nth 3 P) (size 16)) 
                 ((lists:nth 4 P) (size 16)) ((lists:nth 5 P) (size 48))))))
-

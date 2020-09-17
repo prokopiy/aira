@@ -8,7 +8,7 @@
             (wxFrame:createStatusBar Frame '())
             (wxFrame:connect Frame 'close_window)
             (wxFrame:connect Frame 'leave_window)
-
+            
             Frame))
     )
 

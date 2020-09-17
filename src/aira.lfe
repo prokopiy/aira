@@ -25,13 +25,13 @@
         (tplogic:print var2)
         ; (io:format "var3: ")
         ; (tplogic:print var3)
-
+        
         (io:format "~p~n" (list (kb:load-from-csv '() "student.csv" 0.9)))
         ; (io:format "~p~n" (list u1))
         ; (io:format "~p~n" (list (uuid:to_string u1)))
         ; (io:format "~w~n" (list (uuid:to_binary s1)))
         ; (io:format "var3: ~p~n" (list var3))
-        (wxtest:start)
+        ; (wxtest:start)
         )))
 
 

@@ -1,8 +1,7 @@
 ;;; time-probablity-line
-
-
 (defmodule tplogic
     (export all))
+
 
 (defun new-tpline []
   (list 'tpline 0 '()))

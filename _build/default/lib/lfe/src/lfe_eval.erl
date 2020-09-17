@@ -1,4 +1,4 @@
-%% Copyright (c) 2008-2017 Robert Virding
+%% Copyright (c) 2008-2020 Robert Virding
 %%
 %% Licensed under the Apache License, Version 2.0 (the "License");
 %% you may not use this file except in compliance with the License.
@@ -43,18 +43,12 @@
 -compile({no_auto_import,[apply/3]}).           %For our apply/3 function
 -deprecated([eval/1,eval/2,eval_list/2]).
 
-%% We do a lot of quoting!
--define(Q(E), [quote,E]).
--define(BQ(E), [backquote,E]).
--define(C(E), [comma,E]).
--define(C_A(E), ['comma-at',E]).
+-include("lfe.hrl").
 
-%% Define IS_MAP/1 macro for is_map/1 bif.
--ifdef(HAS_MAPS).
--define(IS_MAP(T), is_map(T)).
--else.
--define(IS_MAP(T), false).
--endif.
+-define(STACKTRACE,
+        element(2, erlang:process_info(self(), current_stacktrace))).
+
+-define(EVAL_ERROR(Error), erlang:raise(error, Error, ?STACKTRACE)).
 
 %% -compile([export_all]).
 
@@ -70,7 +64,7 @@ format_error(if_expression) -> <<"non-boolean if test">>;
 format_error(function_clause) -> <<"no function clause matching">>;
 format_error({case_clause,Val}) ->
     lfe_io:format1(<<"no case clause matching ~.P">>, [Val,10]);
-format_error(illegal_guard) -> <<"illegal guard">>;
+format_error(illegal_guard) -> <<"illegal guard expression">>;
 format_error(illegal_bitsize) -> <<"illegal bitsize">>;
 format_error(illegal_bitseg) -> <<"illegal bitsegment">>;
 format_error({illegal_pattern,Pat}) ->
@@ -84,6 +78,16 @@ format_error({argument_limit,Arity}) ->
     lfe_io:format1(<<"too many arguments ~w">>, [Arity]);
 format_error({bad_form,Form}) ->
     lfe_io:format1(<<"bad ~w form">>, [Form]);
+%% Try-catches.
+format_error({try_clause,Val}) ->
+    lfe_io:format1(<<"no try clause matching ~.P">>, [Val,10]);
+format_error({illegal_exception,E}) ->
+    lfe_io:format1(<<"illegal exception ~w">>, [E]);
+%% Records.
+format_error({undefined_record,R}) ->
+    lfe_io:format1(<<"record ~w undefined">>, [R]);
+format_error({undefined_field,R,F}) ->
+    lfe_io:format1(<<"field ~w undefined in record ~w">>, [F,R]);
 %% Everything we don't recognise or know about.
 format_error(Error) ->
     lfe_io:prettyprint1(Error).
@@ -181,12 +185,54 @@ eval_expr(['map-set',M|As], Env) ->
     eval_expr([mset,M|As], Env);
 eval_expr(['map-update',M|As], Env) ->
     eval_expr([mupd,M|As], Env);
+%% Record special forms.
+eval_expr(['make-record',Name,Args], Env) ->
+    case lfe_env:get_record(Name, Env) of
+        {yes,Fields} ->
+            make_record_tuple(Name, Fields, Args, Env);
+        no -> undefined_record_error(Name)
+    end;
+eval_expr(['record-index',Name,F], Env) ->
+    case lfe_env:get_record(Name, Env) of
+        {yes,Fields} ->
+            get_field_index(Name, Fields, F);
+        no -> undefined_record_error(Name)
+    end;
+eval_expr(['record-field',E,Name,F], Env) ->
+    Ev = eval_expr(E, Env),
+    case lfe_env:get_record(Name, Env) of
+        {yes,Fields} ->
+            Index = get_field_index(Name, Fields, F),
+            element(Index, Ev);                 %Report if Ev not a record
+        no -> undefined_record_error(Name)
+    end;
+eval_expr(['record-update',E,Name,Args], Env) ->
+    Ev = eval_expr(E, Env),
+    case lfe_env:get_record(Name, Env) of
+        {yes,Fields} ->
+            update_record_tuple(Name, Fields, Ev, Args, Env);
+        no -> undefined_record_error(Name)
+    end;
+%% Function forms.
 eval_expr([function,Fun,Ar], Env) ->
     %% Build a lambda which can be applied.
     Vs = new_vars(Ar),
     eval_lambda([lambda,Vs,[Fun|Vs]], Env);
 eval_expr([function,M,F,Ar], _) ->
     erlang:make_fun(M, F, Ar);
+%% Special known data type operations.
+eval_expr(['andalso'|Es], Env) ->
+    Fun = fun (E, true) -> eval_expr(E, Env);
+              (_, false) -> false;
+              (_, _Other) -> badarg_error()
+          end,
+    lists:foldl(Fun, true, Es);
+eval_expr(['orelse'|Es], Env) ->
+    Fun = fun (_, true) -> true;
+              (E, false) -> eval_expr(E, Env);
+              (_, _Other) -> badarg_error()
+          end,
+    lists:foldl(Fun, false, Es);
 %% Handle the Core closure special forms.
 eval_expr([lambda|_]=Lambda, Env) ->
     eval_lambda(Lambda, Env);
@@ -237,6 +283,52 @@ eval_expr(Symb, Env) when is_atom(Symb) ->
     end;
 eval_expr(E, _) -> E.                           %Atomic evaluate to themselves
 
+%% make_record_tuple(Name, Fields, Args, Env) -> TupleList.
+%%  We have to macro expand and evaluate the default values here as well.
+
+make_record_tuple(Name, Fields, Args, Env) ->
+    Es = make_record_elements(Fields, Args, Env),
+    list_to_tuple([Name|Es]).
+
+make_record_elements(Fields, Args, Env) ->
+    Mfun = fun ([F,Def|_]) -> make_arg_val(F, Args, Def, Env);
+               (F) -> make_arg_val(F, Args, ?Q(undefined), Env)
+           end,
+    lists:map(Mfun, Fields).
+
+make_arg_val(F, [F,V|_], _Def, Env) -> eval_expr(V, Env);
+make_arg_val(F, [_,_|Args], Def, Env) -> make_arg_val(F, Args, Def, Env);
+make_arg_val(_, [], Def, Env) -> expr(Def, Env).
+
+%% get_field_index(Name, Fields, Field) -> Index.
+
+get_field_index(Name, Fields, F) ->
+    get_field_index(Name, Fields, F, 2).        %First element record name
+
+get_field_index(_Name, [[F|_]|_Fields], F, I) -> I;
+get_field_index(_Name, [F|_Fields], F, I) -> I;
+get_field_index(Name, [_|Fields], F, I) ->
+    get_field_index(Name, Fields, F, I+1);
+get_field_index(Name, [], F, _I) ->
+    undefined_field_error(Name, F).
+
+%% update_record_tuple(Name, Fields, Record, Args, Env) -> TupleList
+%%  Update the Record with the Args.
+
+update_record_tuple(Name, Fields, Rec, Args, Env) ->
+    Es = update_record_elements(Fields, tl(tuple_to_list(Rec)), Args, Env),
+    list_to_tuple([Name|Es]).
+
+update_record_elements(Fields, Recvs, Args, Env) ->
+    Ufun = fun ([F|_], Rv) ->  update_arg_val(F, Args, Rv, Env);
+               (F, Rv) -> update_arg_val(F, Args, Rv, Env)
+           end,
+    lists:zipwith(Ufun, Fields, Recvs).
+
+update_arg_val(F, [F,V|_], _Recv, Env) -> eval_expr(V, Env);
+update_arg_val(F, [_,_|Args], Recv, Env) -> update_arg_val(F, Args, Recv, Env);
+update_arg_val(_, [], Recv, _Env) -> Recv.
+
 %% get_fbinding(NAme, Arity, Env) ->
 %%     {yes,Module,Fun} | {yes,Binding} | no.
 %%  Get the function binding. Locally bound function takes precedence
@@ -261,11 +353,15 @@ get_fbinding(Name, Ar, Env) ->
 eval_list(Es, Env) ->
     map(fun (E) -> eval_expr(E, Env) end, Es).
 
+%% eval_body(Body, Env) -> Value.
+%%  Evaluate the list of expressions and return value of the last one.
+
 eval_body([E], Env) -> eval_expr(E, Env);
 eval_body([E|Es], Env) ->
     eval_expr(E, Env),
     eval_body(Es, Env);
-eval_body([], _) -> [].                         %Empty body
+eval_body([], _) -> [];                         %Empty body
+eval_body(_, _) -> ?EVAL_ERROR({bad_form,body}).%Not a list of expressions
 
 %% eval_binary(Bitsegs, Env) -> Binary.
 %%  Construct a binary from Bitsegs. This code is taken from
@@ -608,11 +704,15 @@ eval_if(Test, True, False, Env) ->
 eval_case([E|Cls], Env) ->
     eval_case_clauses(eval_expr(E, Env), Cls, Env).
 
+%% eval_case_clauses(Value, Clauses, Env) -> Value.
+
 eval_case_clauses(V, Cls, Env) ->
     case match_clause(V, Cls, Env) of
         {yes,B,Vbs} -> eval_body(B, add_vbindings(Vbs, Env));
         no -> eval_error({case_clause,V})
     end.
+
+%% match_clause(Value, Clauses, Env) -> {yes,Body,Bindings} | no.
 
 match_clause(V, [[Pat|B0]|Cls], Env) ->
     case match_when(Pat, V, B0, Env) of
@@ -703,57 +803,62 @@ send_all([], _) -> true.
 %% eval_try(TryBody, Env) -> Value.
 %%  Complicated by checking legal combinations of options.
 
-eval_try([E,['case'|Cls]|Catch], Env) ->
-    eval_try_catch(Catch, E, {yes,Cls}, Env);
+eval_try([E,['case'|Case]|Catch], Env) ->
+    eval_try_catch(Catch, E, Case, Env);
 eval_try([E|Catch], Env) ->
-    eval_try_catch(Catch, E, no, Env);
+    eval_try_catch(Catch, E, [], Env);
 eval_try(_, _) ->
     bad_form_error('try').
 
-eval_try_catch([['catch'|Cls]], E, Case, Env) ->
-    eval_try(E, Case, {yes,Cls}, no, Env);
-eval_try_catch([['catch'|Cls],['after'|B]], E, Case, Env) ->
-    eval_try(E, Case, {yes,Cls}, {yes,B}, Env);
-eval_try_catch([['after'|B]], E, Case, Env) ->
-    eval_try(E, Case, no, {yes,B}, Env);
+eval_try_catch([['catch'|Catch]], E, Case, Env) ->
+    eval_try(E, Case, Catch, [], Env);
+eval_try_catch([['catch'|Catch],['after'|After]], E, Case, Env) ->
+    eval_try(E, Case, Catch, After, Env);
+eval_try_catch([['after'|After]], E, Case, Env) ->
+    eval_try(E, Case, [], After, Env);
 eval_try_catch(_, _, _, _) ->
     bad_form_error('try').
 
 %% We do it all in one, not so efficient but easier.
 eval_try(E, Case, Catch, After, Env) ->
+    check_exceptions(Catch),                    %Check for legal exceptions
     try
         eval_expr(E, Env)
     of
-        Ret ->
-            case Case of
-                {yes,Cls} -> eval_case_clauses(Ret, Cls, Env);
-                no -> Ret
+        Value when Case =:= [] -> Value;
+        Value ->
+            case match_clause(Value, Case, Env) of
+                {yes,Body,Vbs} ->
+                    eval_body(Body, add_vbindings(Vbs, Env));
+                no ->
+                    ?EVAL_ERROR({try_clause,Value})
             end
     catch
-        Class:Error ->
-            %% Try does return the stacktrace here but we can't hit it
-            %% so we have to explicitly get it.
-            Stack = erlang:get_stacktrace(),
-            case Catch of
-                {yes,Cls} ->
-                    eval_catch_clauses({Class,Error,Stack}, Cls, Env);
+        ?CATCH(Class, Error, Stack)
+            %% Try returns the stacktrace here so we have to
+            %% explicitly get it here just in case.
+            case match_clause({Class,Error,Stack}, Catch, Env) of
+                {yes,Body,Vbs} ->
+                    eval_body(Body, add_vbindings(Vbs, Env));
                 no ->
                     erlang:raise(Class, Error, Stack)
             end
     after
-        case After of
-            {yes,B} -> eval_body(B, Env);
-            no -> []
-        end
+        eval_body(After, Env)
     end.
 
-eval_catch_clauses(V, [[Pat|B0]|Cls], Env) ->
-    case match_when(Pat, V, B0, Env) of
-        {yes,B1,Vbs} -> eval_body(B1, add_vbindings(Vbs, Env));
-        no -> eval_catch_clauses(V, Cls, Env)
-    end;
-eval_catch_clauses({Class,Error,Stack}, [], _) ->
-    erlang:raise(Class, Error, Stack).
+check_exceptions([Cl|Cls]) ->
+    case Cl of
+	[[tuple,_,_,St]|_] when is_atom(St) -> ok;
+	['_'|_] -> ok;
+	[Other|_] -> ?EVAL_ERROR({illegal_exception,Other})
+    end,
+    check_exceptions(Cls);
+check_exceptions([]) -> ok.
+
+
+%% eval_call([Mod,Func|Args], Env) -> Value.
+%%  Evaluate the module, function and args and then apply the function.
 
 eval_call([M0,F0|As0], Env) ->
     M1 = eval_expr(M0, Env),
@@ -789,9 +894,8 @@ eval_guard(Gts, Env) ->
         true -> true;
         _Other -> false                         %Fail guard
     catch
-        error:illegal_guard ->                  %Handle illegal guard
-            St = erlang:get_stacktrace(),
-            erlang:raise(error, illegal_guard, St);
+        ?CATCH(error, illegal_guard, Stack)     %Handle illegal guard
+            erlang:raise(error, illegal_guard, Stack);
         _:_ -> false                            %Fail guard
     end.
 
@@ -1159,7 +1263,7 @@ eval_lit_map([K,V|As], Env) ->
     [{eval_lit(K, Env),eval_lit(V, Env)}|eval_lit_map(As, Env)];
 eval_lit_map([], _) -> [].
 
-%% Error functions. {?MODULE,eval_expr,2} is the stacktrace.
+%% Error functions.
 
 badarg_error() -> eval_error(badarg).
 
@@ -1178,10 +1282,14 @@ illegal_guard_error() ->
 illegal_mapkey_error(Key) ->
     eval_error({illegal_mapkey,Key}).
 
-eval_error(Error) ->
-    erlang:raise(error, Error, stacktrace()).
+undefined_record_error(Rec) ->
+    eval_error({undefined_record,Rec}).
 
-stacktrace() -> [{?MODULE,eval_expr,2}].
+undefined_field_error(Rec, F) ->
+    eval_error({undefined_field,Rec,F}).
+
+eval_error(Error) ->
+    erlang:raise(error, Error, ?STACKTRACE).
 
 %%% Helper functions
 

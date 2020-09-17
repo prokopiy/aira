@@ -1,4 +1,4 @@
-%% Copyright (c) 2013-2017 Robert Virding
+%% Copyright (c) 2013-2020 Robert Virding
 %%
 %% Licensed under the Apache License, Version 2.0 (the "License");
 %% you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@
 
 %%-compile([export_all]).
 
+-include("lfe.hrl").
 -include("lfe_macro.hrl").
 
 %% Test function to inspect output of parsing functions.
@@ -220,7 +221,7 @@ trans_forms(Fs, St0) ->
 trans_form({attribute,Line,record,{Name,Fields}}, As, Lfs, St) ->
     case catch {ok,trans_record(Name, Line, Fields)} of
         {ok,Lrec} -> {As,[Lrec|Lfs],St};
-        {'EXIT',_} ->                           %Something went wrong
+        {'EXIT',_E}->                           %Something went wrong
             {As,Lfs,add_warning({notrans_record,Name}, St)}
     end;
 trans_form({attribute,Line,type,{Name,Def,E}}, As, Lfs, St) ->
@@ -255,7 +256,7 @@ trans_form({attribute,_,Name,E}, As, Lfs, St) ->
 trans_form({function,_,Name,Arity,Cls}, As, Lfs, St) ->
     case catch {ok,trans_function(Name, Arity, Cls)} of
         {ok,Lfunc} -> {As,[Lfunc|Lfs],St};
-        {'EXIT',_} ->                           %Something went wrong
+        {'EXIT',_E} ->                          %Something went wrong
             {As,Lfs,add_warning({notrans_function,Name,Arity}, St)}
     end;
 trans_form({error,E}, As, Lfs, #mac{errors=Es}=St) ->
@@ -303,13 +304,13 @@ typed_record_field({record_field,_,F,Def}, Type) ->
 %%  could also contain a typed record definition which we use.
 
 -ifdef(NEW_REC_CORE).
-trans_type(Name, Line, Def, E) ->
+trans_type(Name, _Line, Def, E) ->
     ['define-type',[Name|lfe_types:from_type_defs(E)],
      lfe_types:from_type_def(Def)].
 -else.
 trans_type({record,Name}, Line, Def, _E) ->
     trans_record(Name, Line, Def);
-trans_type(Name, _, Def, E) ->
+trans_type(Name, _Line, Def, E) ->
     ['define-type',[Name|lfe_types:from_type_defs(E)],
      lfe_types:from_type_def(Def)].
 -endif.
@@ -341,8 +342,8 @@ trans_function(Name, _, Cls) ->
 trans_macros([{{atom,Mac},Defs}|Ms], St0) ->
     {Lms,St1} = trans_macros(Ms, St0),
     case catch trans_macro(Mac, Defs, St1) of
-        {'EXIT',E} ->                           %It crashed
-            {Lms,add_warning({notrans_macro,Mac,E}, St1)};
+        {'EXIT',_E} ->                          %Something went wrong
+            {Lms,add_warning({notrans_macro,Mac}, St1)};
         {none,St2} -> {Lms,St2};                %No definition, ignore
         {Mdef,St2} -> {[Mdef|Lms],St2}
     end;

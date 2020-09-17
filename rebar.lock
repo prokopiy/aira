@@ -1,4 +1,8 @@
-[{<<"lfe">>,
+[{<<"csv">>,
+  {git,"https://github.com/isaksamsten/erlang-csv.git",
+       {ref,"253d2dd4da23b9245d4494d18d7198e1a5fceef9"}},
+  0},
+ {<<"lfe">>,
   {git,"http://github.com/rvirding/lfe",
-       {ref,"b139867cc8d0e580bbf5643c31e38e48b7cc2105"}},
+       {ref,"608d32b019210c69cb9af5164550ddfae06ac61b"}},
   0}].

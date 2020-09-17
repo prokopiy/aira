@@ -12,8 +12,8 @@
 -export([format_error/1]).
 
 %% User code. This is placed here to allow extra attributes.
--file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 106).
-%% Copyright (c) 2008-2013 Robert Virding
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 107).
+%% Copyright (c) 2008-2020 Robert Virding
 %%
 %% Licensed under the Apache License, Version 2.0 (the "License");
 %% you may not use this file except in compliance with the License.
@@ -1828,12 +1828,12 @@ yyaction_27(TokenChars, TokenLine) ->
      end .
 
 -compile({inline,yyaction_28/2}).
--file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 101).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 102).
 yyaction_28(TokenChars, TokenLine) ->
      symbol_token (TokenChars, TokenLine) .
 
 -compile({inline,yyaction_29/0}).
--file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 102).
+-file("/home/prokopiy/MEGAsync/workspace/aira/_build/default/plugins/lfe/src/lfe_scan.xrl", 103).
 yyaction_29() ->
      skip_token .
 

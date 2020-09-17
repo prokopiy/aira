@@ -1,4 +1,5 @@
 (defmodule kb
+    (import (from csv (binary_reader 1)))
     (export all))
 
 
@@ -29,7 +30,6 @@
 (defun add-tpl-to-triples-list
     ([Result '() _] (when) Result)
     ([Result (cons H T) TPL] (when) (cons (list H TPL) (add-tpl-to-triples-list Result T TPL))))
-
 
 
 (defun gen-n-uuid [N]
