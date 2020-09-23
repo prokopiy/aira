@@ -1,0 +1,22 @@
+Error: badarg
+[{erlang,'++',
+         [{uuid,[]},
+          [cl,clj,lfe,lfe_abstract_code,lfe_bits,lfe_codegen,lfe_codelift,
+           lfe_comp,lfe_docs,lfe_edlin_expand,lfe_env,lfe_eval,lfe_gen,
+           lfe_init,lfe_internal,lfe_io,lfe_io_format,lfe_io_pretty,
+           lfe_io_write,lfe_lib,lfe_lint,lfe_macro,lfe_macro_export,
+           lfe_macro_include,lfe_macro_record,lfe_ms,lfe_parse,lfe_pmod,
+           lfe_qlc,lfe_scan,lfe_shell,lfe_trans,lfe_types,lfescript,scm]],
+         []},
+ {lists,append,1,[{file,"lists.erl"},{line,127}]},
+ {lists,append,1,[{file,"lists.erl"},{line,127}]},
+ {rebar_paths,purge_and_load,2,
+              [{file,"/usr/lib/rebar3/src/rebar_paths.erl"},{line,115}]},
+ {rebar_paths,set_paths,2,
+              [{file,"/usr/lib/rebar3/src/rebar_paths.erl"},{line,21}]},
+ {rebar_prv_compile,do,1,
+                    [{file,"/usr/lib/rebar3/src/rebar_prv_compile.erl"},
+                     {line,39}]},
+ {rebar_core,do,2,[{file,"/usr/lib/rebar3/src/rebar_core.erl"},{line,154}]},
+ {rebar3,run_aux,2,[{file,"/usr/lib/rebar3/src/rebar3.erl"},{line,181}]}]
+

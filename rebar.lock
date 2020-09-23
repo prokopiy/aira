@@ -4,5 +4,9 @@
   0},
  {<<"lfe">>,
   {git,"http://github.com/rvirding/lfe",
-       {ref,"608d32b019210c69cb9af5164550ddfae06ac61b"}},
+       {ref,"0b9d068b3bf82a110127f77ca666acf40c4a5ce6"}},
+  0},
+ {<<"uuid">>,
+  {git,"https://github.com/prokopiy/lfe-uuid.git",
+       {ref,"57d61b958a133670462477358273edde47835e9f"}},
   0}].

@@ -5,7 +5,8 @@
   {applications,
    [kernel,
     stdlib,
-    csv
+    csv,
+    uuid
    ]},
   {env,[]},
   {modules, []},

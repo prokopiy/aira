@@ -36,12 +36,6 @@
 ;;
 ;; For more information, see ./doc/lfescript.txt.
 
-(defun +my-pi+ () 3.14)
-(defun 451°F () 5455)
-
-(defun |\|a \| aa| []
-  12345)
-
 
 (defun main
   ([(list string)]

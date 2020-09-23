@@ -50,23 +50,9 @@ info(Description) ->
         "~n"
         "This runs an LFE release project's release script, taking the~n"
         "same arguments that the generated release script takes, with~n"
-        "COMMAND being any of the following:~n",
+        "COMMAND being any of the supported non-interactive release script~n"
+        "commands.~n",
         [Description]).
-
-% run(State) ->
-%     Path = rebar_state:dir(State),
-%     io:format("Path: ~p~n", [Path]),
-%     Args = rebar_state:command_args(State),
-%     io:format("Args: ~p~n", [Args]),
-%     ReleaseName = release_name(State),
-%     io:format("ReleaseName: ~p~n", [ReleaseName]),
-%     OutputDir = output_dir(State),
-%     io:format("OutputDir: ~p~n", [OutputDir]),
-%     Cmd = string:join([Path | Args], " "),
-%     io:format("Cmd: ~p~n", [Cmd]),
-%     % Result = os:cmd(Cmd),
-%     Result = "hey",
-%     io:format("~s~n", [Result]).
 
 %% =============================================================================
 %% Internal functions
