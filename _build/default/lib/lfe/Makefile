@@ -1,4 +1,4 @@
-# Copyright (c) 2016 Robert Virding
+# Copyright (c) 2016-2020 Robert Virding
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -298,8 +298,3 @@ docker-docs:
 docker-docs-bash:
 	docker run -i -v `pwd`/doc:/docs -t lfex/lfe-docs:latest bash
 
-# For travis
-travis:
-	$(MAKE) $(MFLAGS) install PREFIX=$$(mktemp -d)
-	@rebar3 eunit -m clj-tests,prop_lfe_doc
-	@rebar3 ct

@@ -1,6 +1,6 @@
-;;#! /usr/bin/env lfescript
-;; -*- mode: lfe -*-
-;;! -smp enable -sname factorial -mnesia debug verbose
+#! /usr/bin/env lfescript
+; -*- mode: lfe -*-
+; ! -smp enable -sname factorial -mnesia debug verbose
 ;;
 ;; Copyright (c) 2013 Duncan McGreggor <oubiwann@cogitat.io>
 ;;
@@ -40,9 +40,12 @@
 (defun main
   ([(list string)]
    (try
-       (let* ((n (list_to_integer string))
-              (f (fac n)))
-         (: lfe_io format '"factorial ~w = ~w\n" (list n f)))
+       (let* 
+         ((st (erlang:system_time))
+          (n (list_to_integer string))
+          (f (ackermann 3 n))
+          (ended (/ (- (erlang:system_time) st) 1000000000)))
+         (: lfe_io format '"factorial ~w = ~w (~wsec)\n" (list n f ended)))
      (catch
        ((tuple _ _ _) (usage)))))
   ([_] (usage)))
@@ -50,6 +53,11 @@
 (defun fac
   ([0] 1)
   ([n] (* n (fac (- n 1)))))
+
+(defun ackermann
+  ((0 n) (+ n 1))
+  ((m 0) (ackermann (- m 1) 1))
+  ((m n) (ackermann (- m 1) (ackermann m (- n 1)))))
 
 (defun usage ()
   (let ((script-name (: escript script_name)))

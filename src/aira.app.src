@@ -4,9 +4,7 @@
   {registered, []},
   {applications,
    [kernel,
-    stdlib,
-    csv,
-    uuid
+    stdlib
    ]},
   {env,[]},
   {modules, []},
