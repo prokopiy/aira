@@ -1,3 +1,9 @@
 _build
 _build/
 _build/*
+
+*.beam
+erl_crash.dump
+
+rebar.lock
+rebar3.crashdump
